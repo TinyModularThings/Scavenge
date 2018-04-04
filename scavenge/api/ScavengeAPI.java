@@ -3,6 +3,7 @@ package scavenge.api;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
@@ -77,6 +78,7 @@ public final class ScavengeAPI
 			APILogger.error("ID for factory ["+factory.toString()+"] is null or Empty. Its required to have a ID!");
 			return;
 		}
+		id = id.toLowerCase(Locale.ENGLISH);
 		if(blockProperties.containsKey(id))
 		{
 			APILogger.error("ID ["+id+"] is already being used!");
@@ -93,6 +95,7 @@ public final class ScavengeAPI
 			APILogger.error("ID for factory ["+factory.toString()+"] is null or Empty. Its required to have a ID!");
 			return;
 		}
+		id = id.toLowerCase(Locale.ENGLISH);
 		if(lootProperties.containsKey(id))
 		{
 			APILogger.error("ID ["+id+"] is already being used!");
@@ -108,6 +111,7 @@ public final class ScavengeAPI
 			APILogger.error("Compund ["+nbt.toString()+"] is registered with a Empty ID");
 			return;
 		}
+		id = id.toLowerCase(Locale.ENGLISH);
 		if(nbt == null)
 		{
 			APILogger.error("Compound with the ID ["+id+"] is null. That is not allowed");
@@ -118,7 +122,7 @@ public final class ScavengeAPI
 	
 	public IResourceProperty createResourceProperty(String id, JsonObject obj)
 	{
-		IScavengeFactory<IResourceProperty> factory = blockProperties.get(id);
+		IScavengeFactory<IResourceProperty> factory = blockProperties.get(id.toLowerCase(Locale.ENGLISH));
 		if(factory == null)
 		{
 			throw new RuntimeException("ID ["+id+"] has no factory!");
@@ -128,7 +132,7 @@ public final class ScavengeAPI
 	
 	public ILootProperty createLootProperty(String id, JsonObject obj)
 	{
-		IScavengeFactory<ILootProperty> factory = lootProperties.get(id);
+		IScavengeFactory<ILootProperty> factory = lootProperties.get(id.toLowerCase(Locale.ENGLISH));
 		if(factory == null)
 		{
 			throw new RuntimeException("ID ["+id+"] has no factory!");
@@ -163,12 +167,12 @@ public final class ScavengeAPI
 	
 	public boolean hasCompound(String id)
 	{
-		return nbtStorage.containsKey(id);
+		return nbtStorage.containsKey(id.toLowerCase(Locale.ENGLISH));
 	}
 	
 	public NBTTagCompound getCompound(String id)
 	{
-		NBTTagCompound nbt = nbtStorage.get(id);
+		NBTTagCompound nbt = nbtStorage.get(id.toLowerCase(Locale.ENGLISH));
 		if(nbt == null)
 		{
 			return null;

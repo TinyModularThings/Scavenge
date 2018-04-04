@@ -1,7 +1,7 @@
 package scavenge.api.block.impl;
 
-import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Set;
 
 import com.google.gson.JsonObject;
@@ -56,7 +56,10 @@ public abstract class BaseResourceProperty implements IResourceProperty
 	
 	public void addIncompats(String... ids)
 	{
-		incompats.addAll(Arrays.asList(ids));
+		for(String id : ids)
+		{
+			incompats.add(id.toLowerCase(Locale.ENGLISH));
+		}
 	}
 	
 	@Override
@@ -71,7 +74,7 @@ public abstract class BaseResourceProperty implements IResourceProperty
 	@Override
 	public boolean canCombine(IResourceProperty property)
 	{
-		return incompats.isEmpty() || !incompats.contains(property.getID());
+		return incompats.isEmpty() || !incompats.contains(property.getID().toLowerCase(Locale.ENGLISH));
 	}
 	
 	@Override

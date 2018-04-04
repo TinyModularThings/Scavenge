@@ -45,4 +45,19 @@ public class StackObject
 	{
 		return LootUtil.doesStackMatch(stack, item, meta, nbt);
 	}
+	
+	public Item getItem()
+	{
+		return item;
+	}
+	
+	public int getMeta()
+	{
+		return meta;
+	}
+	
+	public NBTTagCompound getNbt()
+	{
+		return nbt;
+	}
 }
