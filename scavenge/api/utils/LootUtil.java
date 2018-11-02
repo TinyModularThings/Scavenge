@@ -12,22 +12,22 @@ public class LootUtil
 {
 	public static boolean isStackEmpty(ItemStack stack)
 	{
-		return stack == null || stack.stackSize <= 0;
+		return stack.isEmpty();
 	}
 	
 	public static void setStackSize(ItemStack stack, int amount)
 	{
-		stack.stackSize = amount;
+		stack.setCount(amount);;
 	}
 	
 	public static void changeStackSize(ItemStack stack, int amount)
 	{
-		stack.stackSize += amount;
+		stack.grow(amount);
 	}
 	
 	public static int getStackSize(ItemStack stack)
 	{
-		return stack.stackSize;
+		return stack.getCount();
 	}
 	
 	public static ItemStack getNullStack()
@@ -37,7 +37,7 @@ public class LootUtil
 	
 	public static void addToolTip(ItemStack stack, String tooltip)
 	{
-		NBTTagCompound nbt = stack.getSubCompound("display", true);
+		NBTTagCompound nbt = stack.getOrCreateSubCompound("display");
 		NBTTagList list = nbt.getTagList("Lore", 8);
 		nbt.setTag("Lore", list);
 		list.appendTag(new NBTTagString(TextFormatting.RESET+tooltip));

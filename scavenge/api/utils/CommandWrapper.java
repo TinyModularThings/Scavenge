@@ -37,19 +37,18 @@ public class CommandWrapper implements ICommandSender
 	{
 		return player.getDisplayName();
 	}
-
+	
 	@Override
-	public void addChatMessage(ITextComponent component)
+	public void sendMessage(ITextComponent component)
 	{
-		player.addChatMessage(component);
 	}
 
 	@Override
-	public boolean canCommandSenderUseCommand(int permLevel, String commandName)
+	public boolean canUseCommand(int permLevel, String commandName)
 	{
 		return true;
 	}
-
+	
 	@Override
 	public BlockPos getPosition()
 	{
