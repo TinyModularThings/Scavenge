@@ -1,13 +1,14 @@
-# Scavenge
-Modular Scriptable Block Click Effect Generator    
-This is the offical API of Scavenge for those who want to look it up.    
-It can be also found on CurseForge under the latest version with build code and sourcecode.    
-This Github Repo contains only the Dev Build API (1.10.2)    
-All versions are just ported from there.    
+#Scavenge 1.16.5
 
-LICENSE:
-This Sourcecode is sourcecode of the mod you are allowed to copy it for addons/plugins/compats or close to it.    
-These Plugins/Addons/Compats may also contain the API, thats fine as it doesnt go further.    
-You are not allowed to publish it in any other form then stated.    
+A Block Click Script Generator using Json.
+This is the API made public. You can use it AS IS and can only redistribute it with your addon's.
+Though in addon's should not contain API files due to leading to bugs if the API is not up to date.
+
+How to use the API:
+
+- Create a Class that extends IScavengePlugin.class and has a @ScavengePlugin Annotation. The Plugin will load Automatically. No Mod File Required.
+- Through the ScavengeRegistry.class you can register Condition & Effects. Please Use Base Classes for Creation of things. (BaseScavengeCondition & BaseScavengeEffect)
+- Builders now contain everything instead of the Implementation of the effect/condition. Serialization/Deserialization/Networking/Documentation Generation.
+
 If something is unclear:    
 - ask the dev (Speiger) for permission. 
