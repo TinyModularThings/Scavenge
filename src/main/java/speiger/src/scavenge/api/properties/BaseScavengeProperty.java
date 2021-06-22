@@ -96,7 +96,7 @@ public class BaseScavengeProperty implements IScavengeProperty
 		protected void addJEI(Consumer<IValue> values)
 		{
 			ITextComponent defaultValue = getDefaultMessage();
-			values.accept(new BooleanValue("inverted", false).setOptional(true).setDescription("If the JEI description should be shown"));
+			values.accept(new BooleanValue("jei_visible", false).setOptional(true).setDescription("If the JEI description should be shown"));
 			values.accept(new StringValue("jei_description", defaultValue == null ? null : defaultValue.getString()).setOptional(true).setDescription("JEI Description that should be displayed"));
 			values.accept(new BooleanValue("jei_simple").setOptional(true).setDescription("If the jei_description should be treated as a Simple String or a full ITextComponent JsonObject"));
 		}

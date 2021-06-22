@@ -32,23 +32,27 @@ public class StackObj
 {
 	ItemStack stack;
 	int amount;
+	boolean testNBT;
 	
-	public StackObj(ItemStack stack, int amount)
+	public StackObj(ItemStack stack, int amount, boolean testNBT)
 	{
 		this.stack = stack;
 		this.amount = amount;
+		this.testNBT = testNBT;
 	}
 	
 	public StackObj(PacketBuffer buffer)
 	{
 		stack = buffer.readItem();
 		amount = buffer.readInt();
+		testNBT = buffer.readBoolean();
 	}
 	
 	public void serialize(PacketBuffer buffer)
 	{
 		buffer.writeItem(stack);
 		buffer.writeInt(amount);
+		buffer.writeBoolean(testNBT);
 	}
 	
 	public ITextComponent getName()
@@ -88,13 +92,13 @@ public class StackObj
 		ObjectValue value = new ObjectValue(name);
 		value.addChild(new RegistryValue<>("item", ForgeRegistries.ITEMS, Items.DIAMOND).setDescription("Item that should be used"));
 		value.addChild(new StringValue("nbt", null).setOptional(true).setDescription("NBT data in the item"));
-		value.addChild(new IntValue("count", 0).setOptional(true).setDescription("Amount of items"));
+		value.addChild(new IntValue("count", 1).setOptional(true).setDescription("Amount of items"));
 		return value;
 	}
 	
 	public boolean matches(ItemStack other)
 	{
-		return ItemStack.isSame(stack, other) && NBTUtil.compareNbt(stack.getTag(), other.getTag(), false);
+		return ItemStack.isSame(stack, other) && (!testNBT || NBTUtil.compareNbt(stack.getTag(), other.getTag(), false));
 	}
 	
 	public Item getItem()
@@ -126,7 +130,7 @@ public class StackObj
 		{
 			JsonObject obj = new JsonObject();
 			obj.addProperty("item", src.stack.getItem().getRegistryName().toString());
-			if(src.stack.getTag() != null)
+			if(src.stack.getTag() != null && src.testNBT)
 			{
 				obj.add("nbt", JsonUtils.compoundToJson(src.stack.getTag()));
 			}
@@ -140,7 +144,7 @@ public class StackObj
 			JsonObject obj = json.getAsJsonObject();
 			ItemStack stack = new ItemStack(ForgeRegistries.ITEMS.getValue(new ResourceLocation(obj.get("item").getAsString())));
 			if(obj.has("nbt")) stack.setTag(JsonUtils.toNBTCompound(obj.get("nbt")));
-			return new StackObj(stack, JsonUtils.getOrDefault(obj, "count", 0));
+			return new StackObj(stack, JsonUtils.getOrDefault(obj, "count", 1), obj.has("nbt"));
 		}
 	}
 }

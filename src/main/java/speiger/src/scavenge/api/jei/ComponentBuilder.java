@@ -57,6 +57,7 @@ public class ComponentBuilder
 	
 	public ComponentBuilder addRequiredItem(ItemStack stack, InventoryType type)
 	{
+		if(stack.isEmpty()) return this;
 		stack = stack.copy();
 		MiscUtil.addTooltip(stack, new TranslationTextComponent("scavenge.added.by.requirement", layer.getName()));
 		MiscUtil.addTooltip(stack, type.getName());
@@ -69,6 +70,7 @@ public class ComponentBuilder
 		List<ItemStack> result = new ObjectArrayList<>();
 		for(int i = 0,m=items.size();i<m;i++)
 		{
+			if(items.get(i).isEmpty()) continue;
 			ItemStack stack = items.get(i).copy();
 			MiscUtil.addTooltip(stack, new TranslationTextComponent("scavenge.added.by.requirement", layer.getName()));
 			MiscUtil.addTooltip(stack, type.getName());
@@ -82,6 +84,7 @@ public class ComponentBuilder
 	{
 		if(chance <= 0D) return this;
 		ItemStack stack = new ItemStack(state.getBlock());
+		if(stack.isEmpty()) return this;
 		MiscUtil.addTooltip(stack, new TranslationTextComponent("scavenge.added.by.requirement", layer.getName()));
 		if(chance < 100) MiscUtil.addTooltip(stack, new TranslationTextComponent("scavenge.chance", ItemStack.ATTRIBUTE_MODIFIER_FORMAT.format(chance)));
 		transformBlocks.add(stack);

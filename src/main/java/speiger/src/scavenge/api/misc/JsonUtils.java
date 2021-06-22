@@ -8,6 +8,7 @@ import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 
@@ -74,6 +75,30 @@ public class JsonUtils
 	public static String getOrDefault(JsonObject obj, String tag, String defaultValue)
 	{
 		return obj.has(tag) ? obj.get(tag).getAsString() : defaultValue;
+	}
+	
+	public static JsonElement getOrCrash(JsonElement element, String tag) throws JsonParseException
+	{
+		if(!element.isJsonObject()) throw new JsonParseException("Element should be a JsonObject: "+element.toString());
+		JsonElement el = element.getAsJsonObject().get(tag);
+		if(el == null) throw new JsonParseException("Tag ["+tag+"] couldn't be found in JsonObject: "+element.toString());
+		return el;
+	}
+	
+	public static JsonObject getOrCrashObj(JsonElement element, String tag) throws JsonParseException
+	{
+		if(!element.isJsonObject()) throw new JsonParseException("Element should be a JsonObject: "+element.toString());
+		JsonElement el = element.getAsJsonObject().get(tag);
+		if(!el.isJsonObject()) throw new JsonParseException("Tag ["+tag+"] couldn't be found in JsonObject: "+element.toString());
+		return el.getAsJsonObject();
+	}
+	
+	public static JsonArray getOrCrashArray(JsonElement element, String tag) throws JsonParseException
+	{
+		if(!element.isJsonObject()) throw new JsonParseException("Element should be a JsonObject: "+element.toString());
+		JsonElement el = element.getAsJsonObject().get(tag);
+		if(!el.isJsonArray()) throw new JsonParseException("Tag ["+tag+"] couldn't be found in JsonObject: "+element.toString());
+		return el.getAsJsonArray();
 	}
 	
 	public static <V extends ForgeRegistryEntry<V>> V deserializeEntry(JsonElement element, IForgeRegistry<V> registry)

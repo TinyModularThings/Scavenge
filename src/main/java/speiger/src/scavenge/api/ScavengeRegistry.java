@@ -83,7 +83,7 @@ public class ScavengeRegistry implements IPropertyRegistry, IMathRegistry
 	
 	public boolean isIncompatible(Class<? extends IScavengeProperty> main, Class<? extends IScavengeProperty> other)
 	{
-		return inCompats.getOrDefault(properties.getId(main), ObjectSets.emptySet()).contains(properties.getId(main));
+		return inCompats.getOrDefault(properties.getId(main), ObjectSets.emptySet()).contains(properties.getId(other));
 	}
 	
 	public Set<ResourceLocation> getIncompats(ResourceLocation id)
@@ -167,7 +167,11 @@ public class ScavengeRegistry implements IPropertyRegistry, IMathRegistry
 		if(list == null)
 		{
 			list = new ObjectArrayList<>();
-			for(Item item : ForgeRegistries.ITEMS) list.add(new ItemStack(item));
+			for(Item item : ForgeRegistries.ITEMS) {
+				if(item.getToolTypes(new ItemStack(item)).contains(type)) {
+					list.add(new ItemStack(item));					
+				}
+			}
 			toolToItems.put(type, list);
 		}
 		return list;
