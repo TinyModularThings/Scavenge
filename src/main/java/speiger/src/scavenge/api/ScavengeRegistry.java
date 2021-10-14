@@ -20,6 +20,7 @@ import net.minecraft.network.PacketBuffer;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.gen.feature.template.StructureProcessor;
 import net.minecraftforge.common.ToolType;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fml.common.thread.EffectiveSide;
@@ -28,6 +29,7 @@ import speiger.src.scavenge.api.math.IMathCondition;
 import speiger.src.scavenge.api.math.IMathOperation;
 import speiger.src.scavenge.api.math.IMathRegistry;
 import speiger.src.scavenge.api.misc.SimpleRegistry;
+import speiger.src.scavenge.api.misc.processors.IProcessorRegistry;
 import speiger.src.scavenge.api.misc.serializers.BlockPosSerializer;
 import speiger.src.scavenge.api.misc.serializers.BlockStateSerializer;
 import speiger.src.scavenge.api.misc.serializers.FluidStackSerializer;
@@ -38,13 +40,14 @@ import speiger.src.scavenge.api.properties.IPropertyRegistry;
 import speiger.src.scavenge.api.properties.IScavengeProperty;
 import speiger.src.scavenge.api.storage.IWorldRegistry;
 
-public class ScavengeRegistry implements IPropertyRegistry, IMathRegistry
+public class ScavengeRegistry implements IPropertyRegistry, IMathRegistry, IProcessorRegistry
 {
 	public static Function<Boolean, IWorldRegistry> WORLD_REGISTRY;
 	public static final ScavengeRegistry INSTANCE = new ScavengeRegistry();
 	SimpleRegistry<IScavengeProperty> properties = new SimpleRegistry<>();
 	SimpleRegistry<IMathCondition> conditions = new SimpleRegistry<>();
 	SimpleRegistry<IMathOperation> operations = new SimpleRegistry<>();
+	SimpleRegistry<StructureProcessor> processors = new SimpleRegistry<>();
 	Map<ToolType, List<ItemStack>> toolToItems = new Object2ObjectLinkedOpenHashMap<>();
 	Map<ResourceLocation, Set<ResourceLocation>> inCompats = new Object2ObjectLinkedOpenHashMap<>();
 	GsonBuilder gsonBuilder = new GsonBuilder();
@@ -78,6 +81,13 @@ public class ScavengeRegistry implements IPropertyRegistry, IMathRegistry
 	public void registerMathOperation(Class<? extends IMathOperation> clz, ResourceLocation id, IScavengeBuilder<? extends IMathOperation> builder)
 	{
 		operations.register(clz, id, builder);
+		gsonBuilder.registerTypeAdapter(clz, builder);
+	}
+	
+	@Override
+	public void registerProcessor(Class<? extends StructureProcessor> clz, ResourceLocation id, IScavengeBuilder<? extends StructureProcessor> builder)
+	{
+		processors.register(clz, id, builder);
 		gsonBuilder.registerTypeAdapter(clz, builder);
 	}
 	
@@ -153,6 +163,7 @@ public class ScavengeRegistry implements IPropertyRegistry, IMathRegistry
 		builder.putAll(properties.getIdToBuilder());
 		builder.putAll(conditions.getIdToBuilder());
 		builder.putAll(operations.getIdToBuilder());
+		builder.putAll(processors.getIdToBuilder());
 		return builder;
 	}
 	
@@ -267,6 +278,37 @@ public class ScavengeRegistry implements IPropertyRegistry, IMathRegistry
 	public IMathOperation deserializeMathOperation(PacketBuffer buffer)
 	{
 		IScavengeBuilder<IMathOperation> builder = operations.getBuilder(buffer.readResourceLocation());
+		return builder == null ? null : builder.deserialize(buffer);
+	}
+	
+	@Override
+	public JsonObject serializeProcessor(StructureProcessor processor)
+	{
+		JsonObject obj = gson.toJsonTree(processor).getAsJsonObject();
+		obj.addProperty("processor", processors.getId(processor.getClass()).toString());
+		return obj;
+	}
+	
+	@Override
+	public StructureProcessor deserializerProcessor(JsonObject object)
+	{
+		Class<? extends StructureProcessor> property = processors.getClass(ResourceLocation.tryParse(object.get("processor").getAsString()));
+		if(property == null) return null;
+		return gson.fromJson(object, property);
+	}
+	
+	@Override
+	public void serializeProcessor(StructureProcessor processor, PacketBuffer buffer)
+	{
+		ResourceLocation location = processors.getId(processor.getClass());
+		buffer.writeResourceLocation(location);
+		processors.getBuilder(location).serialize(processor, buffer);
+	}
+	
+	@Override
+	public StructureProcessor deserializerProcessor(PacketBuffer buffer)
+	{
+		IScavengeBuilder<StructureProcessor> builder = processors.getBuilder(buffer.readResourceLocation());
 		return builder == null ? null : builder.deserialize(buffer);
 	}
 }

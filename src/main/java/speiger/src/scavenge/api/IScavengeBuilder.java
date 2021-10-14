@@ -23,6 +23,7 @@ public interface IScavengeBuilder<T> extends JsonDeserializer<T>, JsonSerializer
 		EFFECT,
 		CONDITIONAL_EFFECT,
 		MATH_OPERATION,
-		MATH_CONDITION;
+		MATH_CONDITION,
+		STRUCTURE_PROCESSOR;
 	}
 }
